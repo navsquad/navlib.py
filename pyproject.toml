@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+  "setuptools",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "navlib"
+version = "0.0.1"
+description = "GNSS navigation processor utility"
+readme = "README.md"
+authors = [
+  {name="Daniel Sturdivant", email="sturdivant20@gmail.com"},
+]
+requires-python = ">= 3.10"
+dependencies = [
+  "numpy",
+  "scipy",
+  "numba",
+]
+
+[project.urls]
+Repository = "https://github.com/sturdivant20/navsim.py"
