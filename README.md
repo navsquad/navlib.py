@@ -6,7 +6,7 @@
   ![GitHub Repo stars](https://img.shields.io/github/stars/sturdivant20/navlib.py)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
   ![GitHub pull requests](https://img.shields.io/github/issues-pr/sturdivant20/navlib.py)
-  ![GitHub issues](https://img.shields.io/github/issues/sturdivant20/spydr)
+  ![GitHub issues](https://img.shields.io/github/issues/sturdivant20/navlib.py)
   ![GitHub contributors](https://img.shields.io/github/contributors/sturdivant20/navlib.py)
     
   </div>
