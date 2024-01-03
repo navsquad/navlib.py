@@ -243,6 +243,8 @@ def ecef2lla(xyz):
 
   # combine lla
   lamb = np.arctan2(y, x)
+  lla = np.array([phi, lamb, h], dtype=np.double)
+  
   return np.array([phi, lamb, h], dtype=np.double)
 
 

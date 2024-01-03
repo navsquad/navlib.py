@@ -1,13 +1,13 @@
 '''
-|================================ navlib/coordinates/position.py ==================================|
+|===================================== navlib/constants.py ========================================|
 |                                                                                                  |
 |  Property of Daniel Sturdivant. Unauthorized copying of this file via any medium would be        |
 |  super sad and unfortunate for me. Proprietary and confidential.                                 |
 |                                                                                                  |
 |--------------------------------------------------------------------------------------------------| 
 |                                                                                                  |
-|  @file     navlib/coordinate/tangent.py                                                          |
-|  @brief    Common coordinate frame transformation matrices.                                      |
+|  @file     navlib/constants.py                                                                   |
+|  @brief    Common navigational constants.                                                        |
 |  @ref      Principles of GNSS, Inertial, and Multisensor Integrated Navigation Systems           |
 |              - (2013) Paul D. Groves                                                             |
 |  @author   Daniel Sturdivant <sturdivant20@gmail.com>                                            | 
@@ -28,8 +28,8 @@ Z23 = Z32.T
 # Pi values
 two_pi = 2*np.pi
 half_pi = 0.5*np.pi
-rad2deg = 180.0 / np.pi
-deg2rad = np.pi / 180.0
+R2D = 180.0 / np.pi
+D2R = np.pi / 180.0
 
 # WGS84 Constants
 Ro = 6378137.0      # Equatorial radius (semi-major axis)
@@ -46,8 +46,19 @@ omega_ie = np.array([0.0, 0.0, w_ie], dtype=np.double)
 OMEGA_ie = skew(omega_ie)
 
 # LLA Unit conversions
-lla_rad2deg = np.array([rad2deg, rad2deg, 1.0], dtype=np.double)
-lla_deg2rad = np.array([deg2rad, deg2rad, 1.0], dtype=np.double)
+lla_rad2deg = np.array([R2D, R2D, 1.0], dtype=np.double)
+lla_deg2rad = np.array([D2R, D2R, 1.0], dtype=np.double)
 
 # Speed of light
 c = 299792458
+F_L1 = 1575.42e6                # GPS L1 frequency [Hz]
+F_L2 = 1227.60e6                # GPS L2 frequency [Hz]
+F_L5 = 1176.45e6                # GPS L5 frequency [Hz]
+L_L1 = c / F_L1                 # GPS L1 wavelength [m]
+L_L2 = c / F_L2                 # GPS L2 wavelength [m]
+L_L5 = c / F_L5                 # GPS L5 wavelength [m]
+
+# IMU conversions
+G = 9.80665       # Earth's gravity constant [m/s^2]
+G2T = 1e-4        # Gauss to Tesla
+FT2M = 0.3048     # Feet to meters

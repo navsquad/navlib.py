@@ -38,6 +38,7 @@ import navlib.gnss_ins.kf_loosely as loose
 import navlib.gnss_ins.kf_tightly as tight
 import navlib.gnss.kf_position as kf_pos
 import navlib.gnss.kf_measurement as kf_meas
+import navlib.plot.geoplot as geoplot
 
 
 # === test_ls ===
@@ -52,7 +53,7 @@ def test_ls(init_p, init_v, sv_pos, sv_vel, psr, psrdot, gps_info):
   ned_v_out[0,:] = init_v
   
   x = np.zeros(8, dtype=np.double)
-  for i in np.arange(sv_pos.shape[0]-1):
+  for i in np.arange(sv_pos.shape[0]):
     sv_p = np.zeros((int(sv_pos[i,:].size/3), 3))
     sv_v = np.zeros((int(sv_pos[i,:].size/3), 3))
     for k in np.arange(int(sv_pos[i,:].size/3)):
@@ -126,14 +127,14 @@ def test_gps_pos_domain_filter(init_p, init_v, gps_meas, gps_info):
   # initialize kalman filter
   kf_x = np.concatenate((lla2ecef(init_p), ned2ecefv(init_v, init_p)))
   kf_P = np.diag([5.0,5.0,7.0, 0.05,0.05,0.05])
-  S_a = gps_info['accel_psd']**2
-  S_pos = gps_info['stdp']**2
-  S_vel = gps_info['stdv']**2
+  S_a = gps_info['psd_acc']**2
+  S_pos = gps_info['std_pos']**2
+  S_vel = gps_info['std_vel']**2
   
   dt = 1 / gps_info['freq']
   
   # run simulation
-  for i in np.arange(1,gps_meas.shape[0]-1):
+  for i in np.arange(1,gps_meas.shape[0]):
     # time update (prediction)
     kf_x, kf_P = kf_pos.predict(kf_x, kf_P, S_a, dt)
     
@@ -163,16 +164,16 @@ def test_gps_meas_domain_filter(init_p, init_v, sv_pos, sv_vel, psr, psrdot, gps
   # initialize kalman filter
   kf_x = np.concatenate((lla2ecef(init_p), ned2ecefv(init_v, init_p), np.array([0.0,0.0])))
   kf_P = np.diag([5.0,5.0,7.0, 0.05,0.05,0.05, 1.0,0.1])
-  S_a = gps_info['accel_psd']**2
-  S_psr = np.repeat(gps_info['psr_std']**2, psr.shape[1])
-  S_psrdot = np.repeat(gps_info['psrdot_std']**2, psrdot.shape[1])
-  S_p = gps_info['clkp_psd']**2
-  S_f = gps_info['clkf_psd']**2
+  S_a = gps_info['psd_acc']**2
+  S_psr = np.repeat(gps_info['std_range']**2, psr.shape[1])
+  S_psrdot = np.repeat(gps_info['std_rate']**2, psrdot.shape[1])
+  S_p = gps_info['psd_clkp']**2
+  S_f = gps_info['psd_clkf']**2
   
   dt = 1 / gps_info['freq']
   
   # run simulation
-  for i in np.arange(1,sv_pos.shape[0]-1):
+  for i in np.arange(1,sv_pos.shape[0]):
     # time update (prediction)
     kf_x, kf_P = kf_meas.predict(kf_x, kf_P, S_a, S_p, S_f, dt)
     
@@ -223,8 +224,8 @@ def test_loosely_coupled(init_p, init_v, init_a, f_ib_b, w_ib_b, gps_meas, gps_i
   S_ra = imu_info['ab_psd']**2
   S_bgd = imu_info['arw']**2
   S_bad = imu_info['vrw']**2
-  S_pos = gps_info['stdp']**2
-  S_vel = gps_info['stdv']**2
+  S_pos = gps_info['std_pos']**2
+  S_vel = gps_info['std_vel']**2
   
   f_update = np.round(imu_info['freq'] / gps_info['freq'])
   dt = 1 / imu_info['freq']
@@ -299,10 +300,10 @@ def test_tightly_coupled(init_p, init_v, init_a, f_ib_b, w_ib_b, sv_pos, sv_vel,
   S_ra = imu_info['ab_psd']**2
   S_bgd = imu_info['arw']**2
   S_bad = imu_info['vrw']**2
-  S_psr = np.repeat(gps_info['psr_std']**2, psr.shape[1])
-  S_psrdot = np.repeat(gps_info['psrdot_std']**2, psrdot.shape[1])
-  S_p = gps_info['clkp_psd']**2
-  S_f = gps_info['clkf_psd']**2
+  S_psr = np.repeat(gps_info['std_range']**2, psr.shape[1])
+  S_psrdot = np.repeat(gps_info['std_rate']**2, psrdot.shape[1])
+  S_p = gps_info['psd_clkp']**2
+  S_f = gps_info['psd_clkf']**2
   
   f_update = np.round(imu_info['freq'] / gps_info['freq'])
   dt = 1 / imu_info['freq']
@@ -377,18 +378,12 @@ if __name__ == '__main__':
   psr = np.genfromtxt(data_path+'//ranges-0.csv', delimiter=",", skip_header=0)
   psrdot = np.genfromtxt(data_path+'//rangerates-0.csv', delimiter=",", skip_header=0)
   
-  # gps_pv = np.genfromtxt(data_path+'//gps-0.csv', delimiter=",", skip_header=1)
-  # gps_pv_ecef = np.zeros(gps_pv.shape)
-  # gps_p_ned = np.zeros((gps_pv.shape[0],3))
-  # for i in np.arange(gps_pv.shape[0]):
-  #   gps_pv_ecef[i,3:] = ned2ecefv(gps_pv[i,3:], gps_pv[i,:3] * lla_deg2rad)
-  #   gps_pv_ecef[i,:3] = lla2ecef(gps_pv[i,:3] * lla_deg2rad)
-  #   gps_p_ned[i,:] = lla2ned(gps_pv[i,:3] * lla_deg2rad, lla0)
   
   # reference lla
   ref_ned = np.zeros(ref_lla.shape, dtype=np.double)
   for i in np.arange(ref_lla.shape[0]):
     ref_ned[i,:] = lla2ned(ref_lla[i,:] * lla_deg2rad, lla0)
+
     
   # test least squares
   print('testing GNSS least squares...')
@@ -421,28 +416,16 @@ if __name__ == '__main__':
   lla_tight, ned_p_tight, ned_v_tight, rpy_tight = test_tightly_coupled( \
     lla0, ref_vel[0,:], np.deg2rad(ref_rpy[0,:]), \
     accel, gyro, sv_pos, sv_vel, psr, psrdot, bad_gps, imu)
-  
-  # finished
-  plt.figure()
-  plt.plot(ref_ned[:,1], ref_ned[:,0], color='silver', linewidth=2, label='Ref.')
-  plt.plot(ned_p_ls[:,1], ned_p_ls[:,0], 'x', color='yellowgreen', linewidth=1, markersize=5, label='LS')
-  plt.plot(ned_p_mech[:,1], ned_p_mech[:,0], '--', color='red', linewidth=2, label='Mech.')
-  plt.plot(ned_p_pos_dom[:,1], ned_p_pos_dom[:,0], '.', color='aquamarine', linewidth=3, label='GNSS-Pos')
-  plt.plot(ned_p_meas_dom[:,1], ned_p_meas_dom[:,0], '.', color='pink', linewidth=3, label='GNSS-Meas')
-  plt.plot(ned_p_loose[:,1], ned_p_loose[:,0], '.', color='deepskyblue', linewidth=3, label='Loose')
-  plt.plot(ned_p_tight[:,1], ned_p_tight[:,0], '.', color='magenta', linewidth=3, label='Tight')
-  plt.legend()
-  plt.title('NED Position')
-  plt.grid(which='both', visible=True)
-  
-  plt.figure()
-  plt.plot(ref_rpy[:,2], '*', color='silver', linewidth=2, label='Ref.')
-  plt.plot(rpy_mech[:,2], '.', color='red', linewidth=3, label='Mech.')
-  plt.plot(rpy_loose[:,2], '.', color='deepskyblue', linewidth=3, label='Loose')
-  plt.plot(rpy_tight[:,2], '.', color='magenta', linewidth=3, label='Tight')
-  plt.legend()
-  plt.title('Heading')
-  
-  plt.show()
+
+  # finished, plot
+  gp = geoplot.Geoplot()
+  gp.plot(ref_lla[:,0], ref_lla[:,1], ref_lla[:,2], None, color='silver', marker_size=4, label='Ref.')
+  gp.plot(lla_ls[:,0], lla_ls[:,1], lla_ls[:,2], None, color='yellowgreen', marker_size=0.5, label='LS')
+  gp.plot(lla_mech[:,0], lla_mech[:,1], lla_mech[:,2], None, color='red', marker_size=0.5, label='Mechanization')
+  gp.plot(lla_pos_dom[:,0], lla_pos_dom[:,1], lla_pos_dom[:,2], None, color='aquamarine', marker_size=0.5, label='GNSS-Pos')
+  gp.plot(lla_meas_dom[:,0], lla_meas_dom[:,1], lla_meas_dom[:,2], None, color='pink', marker_size=0.5, label='GNSS-Meas')
+  gp.plot(lla_loose[:,0], lla_loose[:,1], lla_loose[:,2], None, color='deepskyblue', marker_size=0.5, label='Loose')
+  gp.plot(lla_tight[:,0], lla_tight[:,1], lla_tight[:,2], None, color='magenta', marker_size=0.5, label='Tight')
+  gp.show()
   
   print('done!')

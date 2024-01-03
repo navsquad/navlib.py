@@ -17,11 +17,8 @@
 '''
 
 import numpy as np
+from navlib.constants import G, D2R, G2T, FT2M
 
-G = 9.80665       # Earth's gravity constant [m/s^2]
-D2R = np.pi/180   # radians to degrees
-G2T = 1e-4        # Gauss to Tesla
-FT2M = 0.3048     # Feet to meters
 
 # === Default IMUs ===
 # Tactical Grade (Honeywell HG1700)
