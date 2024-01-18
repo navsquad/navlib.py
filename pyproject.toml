@@ -28,7 +28,7 @@ dependencies = [
   "numba",
   "pandas",
   "plotly", 
-  "planar",
+  "planar @ git+https://github.com/srush/planar",
 ]
 
 [project.urls]
