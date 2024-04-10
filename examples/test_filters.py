@@ -40,6 +40,11 @@ import navlib.gnss.kf_position as kf_pos
 import navlib.gnss.kf_measurement as kf_meas
 import navlib.plot.geoplot as geoplot
 
+from pathlib import Path
+PROJECT_PATH = Path(__file__).parents[2]
+# EXAMPLE_PATH = PROJECT_PATH / "examples"
+EXAMPLE_PATH = PROJECT_PATH / "navlib" / "examples"
+
 
 # === test_ls ===
 def test_ls(init_p, init_v, sv_pos, sv_vel, psr, psrdot, gps_info):
@@ -363,20 +368,21 @@ if __name__ == '__main__':
 
   # load data
   print(os.path.abspath(''))
+  data_path = EXAMPLE_PATH / "example_data"
   # data_path = os.path.abspath('..//examples//example_data//')
-  data_path = os.path.abspath('.//navlib//examples//example_data//')
+  # data_path = os.path.abspath('.//navlib//examples//example_data//')
   
-  ref_lla = np.genfromtxt(data_path+'//ref_pos.csv', delimiter=",", skip_header=1)
-  ref_vel = np.genfromtxt(data_path+'//ref_vel.csv', delimiter=",", skip_header=1)
-  ref_rpy = np.fliplr(np.genfromtxt(data_path+'//ref_att_euler.csv', delimiter=",", skip_header=1))
+  ref_lla = np.genfromtxt(data_path / 'ref_pos.csv', delimiter=",", skip_header=1)
+  ref_vel = np.genfromtxt(data_path / 'ref_vel.csv', delimiter=",", skip_header=1)
+  ref_rpy = np.fliplr(np.genfromtxt(data_path / 'ref_att_euler.csv', delimiter=",", skip_header=1))
   lla0 = ref_lla[0,:] * lla_deg2rad
   
-  accel = np.genfromtxt(data_path+'//accel-0.csv', delimiter=",", skip_header=1)
-  gyro = np.deg2rad(np.genfromtxt(data_path+'//gyro-0.csv', delimiter=",", skip_header=1))
-  sv_pos = np.genfromtxt(data_path+'//svpos-0.csv', delimiter=",", skip_header=0)
-  sv_vel = np.genfromtxt(data_path+'//svvel-0.csv', delimiter=",", skip_header=0)
-  psr = np.genfromtxt(data_path+'//ranges-0.csv', delimiter=",", skip_header=0)
-  psrdot = np.genfromtxt(data_path+'//rangerates-0.csv', delimiter=",", skip_header=0)
+  accel = np.genfromtxt(data_path / 'accel-0.csv', delimiter=",", skip_header=1)
+  gyro = np.deg2rad(np.genfromtxt(data_path / 'gyro-0.csv', delimiter=",", skip_header=1))
+  sv_pos = np.genfromtxt(data_path / 'svpos-0.csv', delimiter=",", skip_header=0)
+  sv_vel = np.genfromtxt(data_path / 'svvel-0.csv', delimiter=",", skip_header=0)
+  psr = np.genfromtxt(data_path / 'ranges-0.csv', delimiter=",", skip_header=0)
+  psrdot = np.genfromtxt(data_path / 'rangerates-0.csv', delimiter=",", skip_header=0)
   
   
   # reference lla
